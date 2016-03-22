@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimpleMJPEGStreamViewer.Properties;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,6 +22,9 @@ namespace SimpleMJPEGStreamViewer {
 
         public MainForm() {
             InitializeComponent();
+
+            this.Icon = Icon.FromHandle(Resources.cam.GetHicon());
+
             sync = SynchronizationContext.Current;
 
             dataGridView1.AutoGenerateColumns = false;
