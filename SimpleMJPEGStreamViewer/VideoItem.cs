@@ -4,11 +4,9 @@ using System.Threading;
 using System.Xml.Serialization;
 
 namespace SimpleMJPEGStreamViewer {
-    public class VideoItem : INotifyPropertyChanged, IDisposable {
+    public class VideoItem : INotifyPropertyChanged {
 
         public event PropertyChangedEventHandler PropertyChanged;
-
-        CancellationTokenSource cts;
 
         public VideoItem() {
             UUID = Guid.NewGuid();
@@ -88,24 +86,16 @@ namespace SimpleMJPEGStreamViewer {
 
                 status = value;
 
-                if(value) {
-                    cts = new CancellationTokenSource();
-                }
-                else {
-                    cts.Cancel();
-                    cts.Dispose();
-                }
+                if(!value && Cts != null)
+                    Cts.Cancel();
 
                 OnPropertyChanged(new PropertyChangedEventArgs(nameof(Playing)));
             }
         }
 
         [XmlIgnore]
-        [Browsable(false)]
-        public CancellationToken Token {
-            get {
-                return cts.Token;
-            }
+        public CancellationTokenSource Cts {
+            set; private get;
         }
 
         public readonly Guid UUID;
@@ -133,11 +123,6 @@ namespace SimpleMJPEGStreamViewer {
                 if(handler != null)
                     handler(this, e);
             }
-        }
-
-        public void Dispose() {
-            this.cts.Dispose();
-            GC.SuppressFinalize(this);
         }
     }
 }

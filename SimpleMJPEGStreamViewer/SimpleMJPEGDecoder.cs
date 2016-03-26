@@ -30,7 +30,6 @@ namespace SimpleMJPEGStreamViewer {
         public async static Task StartAsync(Action<Image> action, string url, string login = null, string password = null, CancellationToken? token = null, int chunkMaxSize = 1024, int frameBufferSize = 1024 * 1024) {
 
             var tok = token ?? CancellationToken.None;
-            tok.ThrowIfCancellationRequested();
 
             using(var cli = new HttpClient()) {
                 if(!string.IsNullOrEmpty(login) && !string.IsNullOrEmpty(password))

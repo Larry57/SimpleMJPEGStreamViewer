@@ -64,7 +64,6 @@ namespace SimpleMJPEGStreamViewer {
             var ctl = simpleLayoutPanel1.Controls[item.UUID.ToString()];
             if(ctl != null)
                 ctl.Dispose();
-            item.Dispose();
         }
 
         void adaptProperties(VideoItem item, string propertyName = null) {
@@ -92,29 +91,33 @@ namespace SimpleMJPEGStreamViewer {
                 var item = (VideoItem)((IList)sender)[e.NewIndex];
                 adaptProperties(item, e.PropertyDescriptor.Name);
             }
+            propertyGrid1.Refresh();
         }
 
         async Task startVideoAsync(SimplePictureBox pb, VideoItem item) {
-            try {
-                await SimpleMJPEGDecoder.StartAsync(
-                    image => {
-                        sync.Post(new SendOrPostCallback(_ => pb.Image = image), null);
-                    },
-                    item.Url,
-                    item.Login,
-                    item.Password,
-                    item.Token,
-                    item.MaxStreamBufferSize);
-            }
-            catch(OperationCanceledException ex) {
-                Console.WriteLine(ex);
-            }
-            catch(Exception ex) {
-                Console.WriteLine(ex);
-                pb.Image = (Image)Properties.Resources.notready.Clone();
-            }
-            finally {
-                item.Playing = false;
+            using(var cts = new CancellationTokenSource()) {
+                item.Cts = cts;
+                try {
+                    await SimpleMJPEGDecoder.StartAsync(
+                        image => {
+                            sync.Post(new SendOrPostCallback(_ => pb.Image = image), null);
+                        },
+                        item.Url,
+                        item.Login,
+                        item.Password,
+                        cts.Token,
+                        item.MaxStreamBufferSize);
+                }
+                catch(OperationCanceledException ex) {
+                    Console.WriteLine(ex);
+                }
+                catch(Exception ex) {
+                    Console.WriteLine(ex);
+                    pb.Image = (Image)Properties.Resources.notready.Clone();
+                }
+                finally {
+                    item.Playing = false;
+                }
             }
         }
 
