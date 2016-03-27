@@ -78,6 +78,9 @@ namespace SimpleMJPEGStreamViewer {
                     Task.Run(() => startVideoAsync(pb, item));
                 }
             }
+
+            if(propertyGrid1.SelectedObjects.Contains(item))
+                propertyGrid1.Refresh();
         }
 
         void VideoList_ListChanged(object sender, ListChangedEventArgs e) {
