@@ -102,6 +102,7 @@ namespace SimpleMJPEGStreamViewer {
                 item.Cts = cts;
                 try {
                     await SimpleMJPEGDecoder.StartAsync(
+                    // await SimpleMJPEGDecoderDataFlow.StartAsync(
                         image => {
                             sync.Post(new SendOrPostCallback(_ => pb.Image = image), null);
                         },
