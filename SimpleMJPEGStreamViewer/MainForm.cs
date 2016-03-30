@@ -54,8 +54,8 @@ namespace SimpleMJPEGStreamViewer {
                 loadCams(defaultCamFile);
             }
 
-            this.Disposed += (s, e) => {
-                clearVideoList(); ;
+            this.FormClosing += (s, e) => {
+                clearVideoList();
             };
         }
 
